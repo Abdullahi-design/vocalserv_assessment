@@ -1,103 +1,292 @@
-import Image from "next/image";
+'use client';
+
+import React, { useState, useEffect } from 'react';
+import { Employee, GradeLevel, FormData, GradeLevelForm } from '@/types';
+import { 
+  saveToLocalStorage, 
+  loadFromLocalStorage, 
+  fetchCountriesFromAPI, 
+  getDefaultGradeLevels 
+} from '@/utils/helpers';
+import Header from '@/components/Header';
+import SearchFilter from '@/components/SearchFilter';
+import StatsCards from '@/components/StatsCards';
+import LoadingScreen from '@/components/LoadingScreen';
+import EmployeeTable from '@/components/EmployeeTable';
+import AddEmployeeModal from '@/components/AddEmployeeModal';
+import EditEmployeeModal from '@/components/EditEmployeeModal';
+import GradeLevelModal from '@/components/GradeLevelModal';
+import EmployeeProfileModal from '@/components/EmployeeProfileModal';
 
 export default function Home() {
-  return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="list-inside list-decimal text-sm/6 text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-          <li className="mb-2 tracking-[-.01em]">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-[family-name:var(--font-geist-mono)] font-semibold">
-              app/page.tsx
-            </code>
-            .
-          </li>
-          <li className="tracking-[-.01em]">
-            Save and see your changes instantly.
-          </li>
-        </ol>
+  const [employees, setEmployees] = useState<Employee[]>([]);
+  const [gradeLevels, setGradeLevels] = useState<GradeLevel[]>([]);
+  const [countries, setCountries] = useState<string[]>([]);
+  const [selectedEmployee, setSelectedEmployee] = useState<Employee | null>(null);
+  const [loading, setLoading] = useState<boolean>(true);
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
-        </div>
-      </main>
-      <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
+  const [showAddForm, setShowAddForm] = useState<boolean>(false);
+  const [showEditForm, setShowEditForm] = useState<boolean>(false);
+  const [showGradeLevelForm, setShowGradeLevelForm] = useState<boolean>(false);
+  const [showProfile, setShowProfile] = useState<boolean>(false);
+
+  const [searchTerm, setSearchTerm] = useState<string>('');
+  const [filterGradeLevel, setFilterGradeLevel] = useState<string>('');
+
+  const [formData, setFormData] = useState<FormData>({
+    name: '',
+    country: '',
+    state: '',
+    address: '',
+    role: '',
+    department: '',
+    gradeLevel: ''
+  });
+
+  const [gradeLevelForm, setGradeLevelForm] = useState<GradeLevelForm>({
+    name: '',
+    description: ''
+  });
+
+  useEffect(() => {
+    initializeData();
+  }, []);
+
+  const initializeData = async (): Promise<void> => {
+    try {
+      const { employees: savedEmployees, gradeLevels: savedGradeLevels } = loadFromLocalStorage();
+      
+      setEmployees(savedEmployees);
+      
+      if (savedGradeLevels) {
+        setGradeLevels(savedGradeLevels);
+      } else {
+        const defaultGradeLevels = getDefaultGradeLevels();
+        setGradeLevels(defaultGradeLevels);
+        saveToLocalStorage(undefined, defaultGradeLevels);
+      }
+
+      const countriesList = await fetchCountriesFromAPI();
+      setCountries(countriesList);
+    } catch (error) {
+      console.error('Error initializing data:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const addEmployee = (): void => {
+    if (!formData.name || !formData.country || !formData.role || !formData.department) {
+      alert('Please fill in all required fields');
+      return;
+    }
+
+    const newEmployee: Employee = {
+      id: Date.now(),
+      ...formData,
+      createdAt: new Date().toISOString()
+    };
+
+    const updatedEmployees = [...employees, newEmployee];
+    setEmployees(updatedEmployees);
+    saveToLocalStorage(updatedEmployees, undefined);
+    resetForm();
+    setShowAddForm(false);
+  };
+
+  const editEmployee = (): void => {
+    if (!formData.name || !formData.country || !formData.role || !formData.department) {
+      alert('Please fill in all required fields');
+      return;
+    }
+
+    if (!selectedEmployee) return;
+
+    const updatedEmployees = employees.map(emp => 
+      emp.id === selectedEmployee.id 
+        ? { ...emp, ...formData, updatedAt: new Date().toISOString() }
+        : emp
+    );
+
+    setEmployees(updatedEmployees);
+    saveToLocalStorage(updatedEmployees, undefined);
+    resetForm();
+    setShowEditForm(false);
+    setSelectedEmployee(null);
+  };
+
+  const deleteEmployee = (id: number): void => {
+    if (window.confirm('Are you sure you want to delete this employee?')) {
+      const updatedEmployees = employees.filter(emp => emp.id !== id);
+      setEmployees(updatedEmployees);
+      saveToLocalStorage(updatedEmployees, undefined);
+    }
+  };
+
+  const openEditForm = (employee: Employee): void => {
+    setSelectedEmployee(employee);
+    setFormData({
+      name: employee.name,
+      country: employee.country,
+      state: employee.state,
+      address: employee.address,
+      role: employee.role,
+      department: employee.department,
+      gradeLevel: employee.gradeLevel
+    });
+    setShowEditForm(true);
+  };
+
+  const openProfile = (employee: Employee): void => {
+    setSelectedEmployee(employee);
+    setShowProfile(true);
+  };
+
+  const addGradeLevel = (): void => {
+    if (!gradeLevelForm.name) {
+      alert('Please enter a grade level name');
+      return;
+    }
+
+    const newGradeLevel: GradeLevel = {
+      id: Date.now(),
+      name: gradeLevelForm.name.toUpperCase(),
+      description: gradeLevelForm.description || ''
+    };
+
+    const updatedGradeLevels = [...gradeLevels, newGradeLevel];
+    setGradeLevels(updatedGradeLevels);
+    saveToLocalStorage(undefined, updatedGradeLevels);
+    setGradeLevelForm({ name: '', description: '' });
+    setShowGradeLevelForm(false);
+  };
+
+  const deleteGradeLevel = (id: number): void => {
+    if (window.confirm('Are you sure you want to delete this grade level?')) {
+      const deletedGradeLevel = gradeLevels.find(gl => gl.id === id);
+      const updatedGradeLevels = gradeLevels.filter(gl => gl.id !== id);
+      setGradeLevels(updatedGradeLevels);
+      saveToLocalStorage(undefined, updatedGradeLevels);
+      
+      const updatedEmployees = employees.map(emp => 
+        emp.gradeLevel === deletedGradeLevel?.name 
+          ? { ...emp, gradeLevel: '' }
+          : emp
+      );
+      setEmployees(updatedEmployees);
+      saveToLocalStorage(updatedEmployees, undefined);
+    }
+  };
+
+  const resetForm = (): void => {
+    setFormData({
+      name: '',
+      country: '',
+      state: '',
+      address: '',
+      role: '',
+      department: '',
+      gradeLevel: ''
+    });
+  };
+
+  const closeAddModal = (): void => {
+    setShowAddForm(false);
+    resetForm();
+  };
+
+  const closeEditModal = (): void => {
+    setShowEditForm(false);
+    resetForm();
+    setSelectedEmployee(null);
+  };
+
+  const closeGradeLevelModal = (): void => {
+    setShowGradeLevelForm(false);
+    setGradeLevelForm({ name: '', description: '' });
+  };
+
+  const closeProfileModal = (): void => {
+    setShowProfile(false);
+    setSelectedEmployee(null);
+  };
+
+  const filteredEmployees = employees.filter(employee => {
+    const matchesSearch = employee.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                         employee.role.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                         employee.department.toLowerCase().includes(searchTerm.toLowerCase());
+    
+    const matchesGradeLevel = !filterGradeLevel || employee.gradeLevel === filterGradeLevel;
+    
+    return matchesSearch && matchesGradeLevel;
+  });
+
+  if (loading) {
+    return <LoadingScreen />;
+  }
+
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100">
+      <Header 
+        onAddEmployee={() => setShowAddForm(true)}
+        onManageGradeLevels={() => setShowGradeLevelForm(true)}
+      />
+
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <SearchFilter
+          searchTerm={searchTerm}
+          onSearchChange={setSearchTerm}
+          filterGradeLevel={filterGradeLevel}
+          onFilterChange={setFilterGradeLevel}
+          gradeLevels={gradeLevels}
+        />
+
+        <StatsCards employees={employees} gradeLevels={gradeLevels} />
+
+        <EmployeeTable
+          employees={filteredEmployees}
+          onViewProfile={openProfile}
+          onEditEmployee={openEditForm}
+          onDeleteEmployee={deleteEmployee}
+        />
+      </div>
+
+      <AddEmployeeModal
+        isOpen={showAddForm}
+        onClose={closeAddModal}
+        formData={formData}
+        onFormChange={setFormData}
+        countries={countries}
+        gradeLevels={gradeLevels}
+        onSubmit={addEmployee}
+      />
+
+      <EditEmployeeModal
+        isOpen={showEditForm}
+        onClose={closeEditModal}
+        formData={formData}
+        onFormChange={setFormData}
+        countries={countries}
+        gradeLevels={gradeLevels}
+        onSubmit={editEmployee}
+      />
+
+      <GradeLevelModal
+        isOpen={showGradeLevelForm}
+        onClose={closeGradeLevelModal}
+        gradeLevels={gradeLevels}
+        gradeLevelForm={gradeLevelForm}
+        onFormChange={setGradeLevelForm}
+        onAddGradeLevel={addGradeLevel}
+        onDeleteGradeLevel={deleteGradeLevel}
+      />
+
+      <EmployeeProfileModal
+        isOpen={showProfile}
+        onClose={closeProfileModal}
+        employee={selectedEmployee}
+        onEdit={openEditForm}
+      />
     </div>
   );
 }
