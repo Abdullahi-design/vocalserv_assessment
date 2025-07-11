@@ -20,7 +20,7 @@ const EmployeeTable: React.FC<EmployeeTableProps> = ({
     return (
       <div className="bg-white/60 backdrop-blur-lg shadow-xl rounded-3xl overflow-hidden border border-white/20">
         <div className="px-8 py-6 border-b border-slate-200/50 bg-gradient-to-r from-slate-50/50 to-blue-50/50">
-          <h3 className="text-xl font-bold text-slate-900">
+          <h3 className="text-sm font-bold text-slate-900">
             Team Members (0)
           </h3>
         </div>
@@ -28,8 +28,8 @@ const EmployeeTable: React.FC<EmployeeTableProps> = ({
           <div className="mx-auto w-24 h-24 bg-gradient-to-br from-slate-100 to-slate-200 rounded-full flex items-center justify-center mb-6">
             <Users className="h-12 w-12 text-slate-400" />
           </div>
-          <h3 className="text-xl font-semibold text-slate-900 mb-2">No employees found</h3>
-          <p className="text-slate-600 max-w-md mx-auto">
+          <h3 className="text-md font-semibold text-slate-900 mb-2">No employees found</h3>
+          <p className="text-slate-600 text-sm max-w-md mx-auto">
             Get started by adding your first team member to build your organization.
           </p>
         </div>
@@ -40,7 +40,7 @@ const EmployeeTable: React.FC<EmployeeTableProps> = ({
   return (
     <div className="bg-white/60 backdrop-blur-lg shadow-xl rounded-3xl overflow-hidden border border-white/20">
       <div className="px-8 py-6 border-b border-slate-200/50 bg-gradient-to-r from-slate-50/50 to-blue-50/50">
-        <h3 className="text-xl font-bold text-slate-900">
+        <h3 className="text-sm font-bold text-slate-900">
           Team Members ({employees.length})
         </h3>
       </div>
