@@ -1,7 +1,7 @@
-import React from 'react';
-import { Users, User, Edit, Trash2 } from 'lucide-react';
+import { Users, MapPin, Building, Award } from 'lucide-react';
 import { Employee } from '../types';
 import { getAvatarColor } from '../utils/helpers';
+import { ActionMenu } from './ActionMenu';
 
 interface EmployeeTableProps {
   employees: Employee[];
@@ -39,13 +39,13 @@ const EmployeeTable: React.FC<EmployeeTableProps> = ({
 
   return (
     <div className="bg-white/60 backdrop-blur-lg shadow-xl rounded-3xl overflow-hidden border border-white/20">
-      <div className="px-8 py-6 border-b border-slate-200/50 bg-gradient-to-r from-slate-50/50 to-blue-50/50">
+      <div className="px-4 sm:px-8 py-6 border-b border-slate-200/50 bg-gradient-to-r from-slate-50/50 to-blue-50/50">
         <h3 className="text-sm font-bold text-slate-900">
           Team Members ({employees.length})
         </h3>
       </div>
       
-      <div className="overflow-x-auto">
+      <div className="hidden lg:block overflow-x-auto">
         <table className="min-w-full">
           <thead>
             <tr className="bg-gradient-to-r from-slate-50/50 to-blue-50/50">
@@ -101,34 +101,87 @@ const EmployeeTable: React.FC<EmployeeTableProps> = ({
                   </span>
                 </td>
                 <td className="px-8 py-6 whitespace-nowrap text-sm font-medium">
-                  <div className="flex space-x-3">
-                    <button
-                      onClick={() => onViewProfile(employee)}
-                      className="group p-2 cursor-pointer text-blue-600 hover:text-blue-900 hover:bg-blue-100 rounded-lg transition-all duration-200"
-                      title="View Profile"
-                    >
-                      <User className="h-5 w-5 group-hover:scale-110 transition-transform" />
-                    </button>
-                    <button
-                      onClick={() => onEditEmployee(employee)}
-                      className="group p-2 cursor-pointer text-emerald-600 hover:text-emerald-900 hover:bg-emerald-100 rounded-lg transition-all duration-200"
-                      title="Edit Employee"
-                    >
-                      <Edit className="h-5 w-5 group-hover:scale-110 transition-transform" />
-                    </button>
-                    <button
-                      onClick={() => onDeleteEmployee(employee.id)}
-                      className="group p-2 cursor-pointer text-red-600 hover:text-red-900 hover:bg-red-100 rounded-lg transition-all duration-200"
-                      title="Delete Employee"
-                    >
-                      <Trash2 className="h-5 w-5 group-hover:scale-110 transition-transform" />
-                    </button>
-                  </div>
+                  <ActionMenu
+                    employee={employee}
+                    onViewProfile={onViewProfile}
+                    onEditEmployee={onEditEmployee}
+                    onDeleteEmployee={onDeleteEmployee}
+                  />
                 </td>
               </tr>
             ))}
           </tbody>
         </table>
+      </div>
+
+      <div className="lg:hidden divide-y divide-slate-200/50">
+        {employees.map((employee) => (
+          <div key={employee.id} className="p-4 sm:p-6 hover:bg-gradient-to-r hover:from-blue-50/30 hover:to-indigo-50/30 transition-all duration-200">
+            <div className="flex items-center mb-4">
+              <div className="flex-shrink-0 h-12 w-12 sm:h-14 sm:w-14 relative">
+                <div className={`h-12 w-12 sm:h-14 sm:w-14 rounded-full ${getAvatarColor(employee.name)} flex items-center justify-center shadow-lg ring-2 ring-white/50`}>
+                  <span className="text-lg sm:text-xl font-bold text-white">
+                    {employee.name.charAt(0).toUpperCase()}
+                  </span>
+                </div>
+              </div>
+              <div className="ml-4 flex-1 min-w-0">
+                <h4 className="text-lg font-semibold text-slate-900 truncate">{employee.name}</h4>
+                <p className="text-sm text-slate-600 truncate">{employee.role}</p>
+              </div>
+              <div className="ml-2">
+                <ActionMenu
+                  employee={employee}
+                  onViewProfile={onViewProfile}
+                  onEditEmployee={onEditEmployee}
+                  onDeleteEmployee={onDeleteEmployee}
+                  isMobile={true}
+                />
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div className="flex items-start space-x-3">
+                <div className="flex-shrink-0 p-2 bg-blue-100 rounded-lg">
+                  <Building className="h-4 w-4 text-blue-600" />
+                </div>
+                <div className="min-w-0 flex-1">
+                  <p className="text-xs font-semibold text-slate-500 uppercase tracking-wide">Department</p>
+                  <p className="text-sm font-medium text-slate-900 truncate">{employee.department}</p>
+                </div>
+              </div>
+
+              <div className="flex items-start space-x-3">
+                <div className="flex-shrink-0 p-2 bg-emerald-100 rounded-lg">
+                  <MapPin className="h-4 w-4 text-emerald-600" />
+                </div>
+                <div className="min-w-0 flex-1">
+                  <p className="text-xs font-semibold text-slate-500 uppercase tracking-wide">Location</p>
+                  <p className="text-sm font-medium text-slate-900 truncate">
+                    {employee.country}
+                    {employee.state && `, ${employee.state}`}
+                  </p>
+                </div>
+              </div>
+
+              <div className="flex items-start space-x-3 sm:col-span-2">
+                <div className="flex-shrink-0 p-2 bg-purple-100 rounded-lg">
+                  <Award className="h-4 w-4 text-purple-600" />
+                </div>
+                <div className="min-w-0 flex-1">
+                  <p className="text-xs font-semibold text-slate-500 uppercase tracking-wide">Grade Level</p>
+                  <span className={`inline-flex px-3 py-1 text-xs font-semibold rounded-full mt-1 ${
+                    employee.gradeLevel 
+                      ? 'bg-gradient-to-r from-emerald-500 to-green-500 text-white shadow-sm' 
+                      : 'bg-gradient-to-r from-slate-100 to-slate-200 text-slate-700'
+                  }`}>
+                    {employee.gradeLevel || 'Not Assigned'}
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+        ))}
       </div>
     </div>
   );
