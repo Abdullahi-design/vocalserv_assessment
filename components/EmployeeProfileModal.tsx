@@ -1,5 +1,5 @@
 import React from 'react';
-import { Star, Building, MapPin, Award, Calendar, Edit } from 'lucide-react';
+import { Star, Building, MapPin, Award, Calendar, Edit, X } from 'lucide-react';
 import { Employee } from '../types';
 import { getAvatarColor } from '../utils/helpers';
 
@@ -19,14 +19,15 @@ const EmployeeProfileModal: React.FC<EmployeeProfileModalProps> = ({
   if (!isOpen || !employee) return null;
 
   return (
-    <div className="fixed inset-0 bg-black/50 backdrop-blur-sm overflow-y-auto h-full w-full z-50 flex items-center justify-center p-4">
-      <div className="relative w-full max-w-lg">
-        <div className="bg-white/95 backdrop-blur-lg shadow-2xl rounded-3xl border border-white/20 p-8">
+    <div className="fixed inset-0 bg-black/50 backdrop-blur-sm h-full w-full z-50 flex items-center justify-center p-4">
+      <div className="relative w-full bg-white/95 rounded-3xl max-w-lg overflow-y-auto h-full">
+        <div className="backdrop-blur-lg rounded-3xl border border-white/20 p-8">
+        <X className="absolute top-4 right-4 h-6 w-6 text-slate-600 cursor-pointer" onClick={onClose} />
           <div className="text-center mb-8">
             <div className="flex items-center justify-center mb-6">
               <div className="relative">
-                <div className={`h-24 w-24 rounded-full ${getAvatarColor(employee.name)} flex items-center justify-center shadow-xl ring-4 ring-white/50`}>
-                  <span className="text-3xl font-bold text-white">
+                <div className={`h-18 w-18 rounded-full ${getAvatarColor(employee.name)} flex items-center justify-center shadow-xl ring-4 ring-white/50`}>
+                  <span className="text-2xl font-bold text-white">
                     {employee.name.charAt(0).toUpperCase()}
                   </span>
                 </div>
@@ -35,12 +36,12 @@ const EmployeeProfileModal: React.FC<EmployeeProfileModalProps> = ({
                 </div>
               </div>
             </div>
-            <h3 className="text-2xl font-bold text-slate-900 mb-1">{employee.name}</h3>
-            <p className="text-lg text-slate-600 font-medium">{employee.role}</p>
+            <h3 className="text-lg font-bold text-slate-900 mb-1">{employee.name}</h3>
+            <p className="text-sm text-slate-600 font-medium">{employee.role}</p>
           </div>
 
           <div className="space-y-6">
-            <div className="flex items-start p-4 bg-gradient-to-r from-blue-50/50 to-indigo-50/50 rounded-xl border border-blue-200/50">
+            <div className="flex items-start p-2 h-fit bg-gradient-to-r from-blue-50/50 to-indigo-50/50 rounded-xl border border-blue-200/50">
               <Building className="h-6 w-6 text-blue-600 mr-4 mt-1 flex-shrink-0" />
               <div>
                 <p className="text-sm font-semibold text-slate-900 uppercase tracking-wide">Department</p>
@@ -48,7 +49,7 @@ const EmployeeProfileModal: React.FC<EmployeeProfileModalProps> = ({
               </div>
             </div>
 
-            <div className="flex items-start p-4 bg-gradient-to-r from-emerald-50/50 to-green-50/50 rounded-xl border border-emerald-200/50">
+            <div className="flex items-start p-2 h-fit bg-gradient-to-r from-emerald-50/50 to-green-50/50 rounded-xl border border-emerald-200/50">
               <MapPin className="h-6 w-6 text-emerald-600 mr-4 mt-1 flex-shrink-0" />
               <div>
                 <p className="text-sm font-semibold text-slate-900 uppercase tracking-wide">Location</p>
@@ -62,7 +63,7 @@ const EmployeeProfileModal: React.FC<EmployeeProfileModalProps> = ({
               </div>
             </div>
 
-            <div className="flex items-start p-4 bg-gradient-to-r from-purple-50/50 to-indigo-50/50 rounded-xl border border-purple-200/50">
+            <div className="flex items-start p-2 h-fit bg-gradient-to-r from-purple-50/50 to-indigo-50/50 rounded-xl border border-purple-200/50">
               <Award className="h-6 w-6 text-purple-600 mr-4 mt-1 flex-shrink-0" />
               <div>
                 <p className="text-sm font-semibold text-slate-900 uppercase tracking-wide">Grade Level</p>
@@ -100,13 +101,13 @@ const EmployeeProfileModal: React.FC<EmployeeProfileModalProps> = ({
                 onClose();
                 onEdit(employee);
               }}
-              className="px-6 py-3 text-sm font-semibold text-white bg-gradient-to-r from-blue-600 to-indigo-600 rounded-xl hover:from-blue-700 hover:to-indigo-700 transform hover:scale-105 transition-all shadow-lg"
+              className="px-6 py-3 text-sm cursor-pointer font-semibold text-white bg-gradient-to-r from-blue-600 to-indigo-600 rounded-xl hover:from-blue-700 hover:to-indigo-700 transform hover:scale-105 transition-all shadow-lg"
             >
               Edit Employee
             </button>
             <button
               onClick={onClose}
-              className="px-6 py-3 text-sm font-semibold text-slate-700 bg-slate-200 rounded-xl hover:bg-slate-300 transition-colors"
+              className="px-6 py-3 text-sm cursor-pointer font-semibold text-slate-700 bg-slate-200 rounded-xl hover:bg-slate-300 transition-colors"
             >
               Close
             </button>

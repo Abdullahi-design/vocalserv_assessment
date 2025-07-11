@@ -101,7 +101,7 @@ const AddEmployeeModal: React.FC<AddEmployeeModalProps> = ({
                 <div className="flex justify-end space-x-4 mt-8">
                     <button
                         onClick={onClose}
-                        className="px-6 py-3 text-sm font-semibold text-slate-700 bg-slate-200 rounded-xl hover:bg-slate-300 transition-colors"
+                        className="px-6 py-3 cursor-pointer text-sm font-semibold text-slate-700 bg-slate-200 rounded-xl hover:bg-slate-300 transition-colors"
                     >
                         Cancel
                     </button>
