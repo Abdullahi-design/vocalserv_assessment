@@ -95,7 +95,7 @@ const GradeLevelModal: React.FC<GradeLevelModalProps> = ({
               </div>
               <button
                 onClick={() => onDeleteGradeLevel(gl.id)}
-                className="opacity-0 group-hover:opacity-100 p-2 text-red-600 hover:text-red-900 hover:bg-red-100 rounded-lg transition-all duration-200"
+                className="opacity-0 cursor-pointer group-hover:opacity-100 p-2 text-red-600 hover:text-red-900 hover:bg-red-100 rounded-lg transition-all duration-200"
                 title="Delete Grade Level"
               >
                 <Trash2 className="h-4 w-4" />
