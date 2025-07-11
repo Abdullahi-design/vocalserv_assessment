@@ -13,7 +13,7 @@ const Header: React.FC<HeaderProps> = ({ onAddEmployee, onManageGradeLevels }) =
             <div className="flex justify-between items-center py-2">
                 <div className="flex items-center space-x-4">
                     <div className="p-3 bg-gradient-to-br from-blue-600 to-indigo-600 rounded-2xl shadow-lg">
-                        <Users className="h-3 w-3 text-white" />
+                        <Users className="h-4 w-4 text-white" />
                     </div>
                     <div className='md:block hidden'>
                         <h1 className="text-xl font-bold bg-gradient-to-r from-slate-900 via-blue-900 to-indigo-900 bg-clip-text text-transparent">
