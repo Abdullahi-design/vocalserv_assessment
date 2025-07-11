@@ -20,7 +20,6 @@ const SearchFilter: React.FC<SearchFilterProps> = ({
 }) => {
   return (
     <div className="flex flex-col sm:flex-row gap-6 mb-8">
-      {/* Search Input */}
       <div className="flex-1 relative group">
         <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 h-5 w-5 text-slate-400 group-focus-within:text-blue-600 transition-colors" />
         <input
@@ -32,7 +31,6 @@ const SearchFilter: React.FC<SearchFilterProps> = ({
         />
       </div>
       
-      {/* Grade Level Filter */}
       <div className="sm:w-72">
         <VGradeLevelSelect
           gradeLevels={[{ id: 0, name: '', description: 'All Grade Levels' }, ...gradeLevels]}

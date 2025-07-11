@@ -45,13 +45,11 @@ export const fetchCountriesFromAPI = async (): Promise<string[]> => {
         const response = await fetch('https://pkgstore.datahub.io/core/world-cities/world-cities_json/data/5b3dd46ad10990bca47b04b4739a02ba/world-cities_json.json');
         const data = await response.json();
         
-        // Extract unique countries
         const uniqueCountries: any = [...new Set(data.map((city: any) => city.country))].sort();
         return uniqueCountries;
     } catch (error) {
         console.error('Error fetching countries:', error);
-        // Fallback countries if API fails
-        return ['United States', 'United Kingdom', 'Canada', 'Australia', 'Germany', 'France', 'Japan', 'Nigeria', 'India', 'Brazil'];
+        return ['Nigeria', 'United States', 'United Kingdom', 'Canada', 'Australia', 'Germany', 'France', 'Japan', 'Nigeria', 'India', 'Brazil'];
     }
 };
 

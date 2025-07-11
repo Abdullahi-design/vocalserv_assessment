@@ -5,17 +5,17 @@ import { getAvatarColor } from '../utils/helpers';
 import { VButton } from './ui/VButton';
 
 interface EmployeeProfileModalProps {
-  isOpen: boolean;
-  onClose: () => void;
-  employee: Employee | null;
-  onEdit: (employee: Employee) => void;
+    isOpen: boolean;
+    onClose: () => void;
+    employee: Employee | null;
+    onEdit: (employee: Employee) => void;
 }
 
 const EmployeeProfileModal: React.FC<EmployeeProfileModalProps> = ({
-  isOpen,
-  onClose,
-  employee,
-  onEdit
+    isOpen,
+    onClose,
+    employee,
+    onEdit
 }) => {
   if (!isOpen || !employee) return null;
 
@@ -28,7 +28,6 @@ const EmployeeProfileModal: React.FC<EmployeeProfileModalProps> = ({
             onClick={onClose} 
           />
           
-          {/* Profile Header */}
           <div className="text-center mb-8">
             <div className="flex items-center justify-center mb-6">
               <div className="relative">
@@ -46,9 +45,7 @@ const EmployeeProfileModal: React.FC<EmployeeProfileModalProps> = ({
             <p className="text-sm text-slate-600 font-medium">{employee.role}</p>
           </div>
 
-          {/* Profile Details */}
           <div className="space-y-6">
-            {/* Department */}
             <div className="flex items-start p-2 h-fit bg-gradient-to-r from-blue-50/50 to-indigo-50/50 rounded-xl border border-blue-200/50">
               <Building className="h-6 w-6 text-blue-600 mr-4 mt-1 flex-shrink-0" />
               <div>
@@ -57,7 +54,6 @@ const EmployeeProfileModal: React.FC<EmployeeProfileModalProps> = ({
               </div>
             </div>
 
-            {/* Location */}
             <div className="flex items-start p-2 h-fit bg-gradient-to-r from-emerald-50/50 to-green-50/50 rounded-xl border border-emerald-200/50">
               <MapPin className="h-6 w-6 text-emerald-600 mr-4 mt-1 flex-shrink-0" />
               <div>
@@ -72,7 +68,6 @@ const EmployeeProfileModal: React.FC<EmployeeProfileModalProps> = ({
               </div>
             </div>
 
-            {/* Grade Level */}
             <div className="flex items-start p-2 h-fit bg-gradient-to-r from-purple-50/50 to-indigo-50/50 rounded-xl border border-purple-200/50">
               <Award className="h-6 w-6 text-purple-600 mr-4 mt-1 flex-shrink-0" />
               <div>
@@ -87,7 +82,6 @@ const EmployeeProfileModal: React.FC<EmployeeProfileModalProps> = ({
               </div>
             </div>
 
-            {/* Timestamps */}
             {employee.createdAt && (
               <div className="pt-6 border-t border-slate-200">
                 <div className="flex items-center text-sm text-slate-500 space-x-4">
@@ -106,7 +100,6 @@ const EmployeeProfileModal: React.FC<EmployeeProfileModalProps> = ({
             )}
           </div>
 
-          {/* Action Buttons */}
           <div className="flex justify-end space-x-4 mt-8">
             <VButton
               variant="primary"

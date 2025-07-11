@@ -58,52 +58,52 @@ const AddEmployeeModal: React.FC<AddEmployeeModalProps> = ({
         iconGradient="from-blue-500 to-indigo-600"
         actions={modalActions}
     >
-      <VInput
-        placeholder="Full Name *"
-        value={formData.name}
-        onChange={(value) => handleInputChange('name', value)}
-        required
-      />
+        <VInput
+            placeholder="Full Name *"
+            value={formData.name}
+            onChange={(value) => handleInputChange('name', value)}
+            required
+        />
+        
+        <VCountrySelect
+            countries={countries}
+            value={formData.country}
+            onChange={(value) => handleInputChange('country', value)}
+            required
+        />
+        
+        <VInput
+            placeholder="State / Province"
+            value={formData.state}
+            onChange={(value) => handleInputChange('state', value)}
+        />
+        
+        <VTextarea
+            placeholder="Address"
+            value={formData.address}
+            onChange={(value) => handleInputChange('address', value)}
+            rows={3}
+        />
       
-      <VCountrySelect
-        countries={countries}
-        value={formData.country}
-        onChange={(value) => handleInputChange('country', value)}
-        required
-      />
-      
-      <VInput
-        placeholder="State / Province"
-        value={formData.state}
-        onChange={(value) => handleInputChange('state', value)}
-      />
-      
-      <VTextarea
-        placeholder="Address"
-        value={formData.address}
-        onChange={(value) => handleInputChange('address', value)}
-        rows={3}
-      />
-      
-      <VInput
-        placeholder="Job Role *"
-        value={formData.role}
-        onChange={(value) => handleInputChange('role', value)}
-        required
-      />
-      
-      <VInput
-        placeholder="Department *"
-        value={formData.department}
-        onChange={(value) => handleInputChange('department', value)}
-        required
-      />
-      
-      <VGradeLevelSelect
-        gradeLevels={gradeLevels}
-        value={formData.gradeLevel}
-        onChange={(value) => handleInputChange('gradeLevel', value)}
-      />
+        <VInput
+            placeholder="Job Role *"
+            value={formData.role}
+            onChange={(value) => handleInputChange('role', value)}
+            required
+        />
+        
+        <VInput
+            placeholder="Department *"
+            value={formData.department}
+            onChange={(value) => handleInputChange('department', value)}
+            required
+        />
+        
+        <VGradeLevelSelect
+            gradeLevels={gradeLevels}
+            value={formData.gradeLevel}
+            onChange={(value) => handleInputChange('gradeLevel', value)}
+        />
     </VModal>
   );
 };
