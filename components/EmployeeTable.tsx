@@ -104,21 +104,21 @@ const EmployeeTable: React.FC<EmployeeTableProps> = ({
                   <div className="flex space-x-3">
                     <button
                       onClick={() => onViewProfile(employee)}
-                      className="group p-2 text-blue-600 hover:text-blue-900 hover:bg-blue-100 rounded-lg transition-all duration-200"
+                      className="group p-2 cursor-pointer text-blue-600 hover:text-blue-900 hover:bg-blue-100 rounded-lg transition-all duration-200"
                       title="View Profile"
                     >
                       <User className="h-5 w-5 group-hover:scale-110 transition-transform" />
                     </button>
                     <button
                       onClick={() => onEditEmployee(employee)}
-                      className="group p-2 text-emerald-600 hover:text-emerald-900 hover:bg-emerald-100 rounded-lg transition-all duration-200"
+                      className="group p-2 cursor-pointer text-emerald-600 hover:text-emerald-900 hover:bg-emerald-100 rounded-lg transition-all duration-200"
                       title="Edit Employee"
                     >
                       <Edit className="h-5 w-5 group-hover:scale-110 transition-transform" />
                     </button>
                     <button
                       onClick={() => onDeleteEmployee(employee.id)}
-                      className="group p-2 text-red-600 hover:text-red-900 hover:bg-red-100 rounded-lg transition-all duration-200"
+                      className="group p-2 cursor-pointer text-red-600 hover:text-red-900 hover:bg-red-100 rounded-lg transition-all duration-200"
                       title="Delete Employee"
                     >
                       <Trash2 className="h-5 w-5 group-hover:scale-110 transition-transform" />
