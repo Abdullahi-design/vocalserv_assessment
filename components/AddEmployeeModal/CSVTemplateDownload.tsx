@@ -9,7 +9,7 @@ interface CSVTemplateDownloadProps {
 export const CSVTemplateDownload: React.FC<CSVTemplateDownloadProps> = ({ onDownload }) => (
     <div className="p-4 bg-blue-50 rounded-xl border border-blue-200">
         <div className="flex items-center justify-between">
-            <div className="flex items-center">
+            <div className="flex items-center justify-between">
                 <FileText className="h-5 w-5 text-blue-600 mr-3" />
                 <div>
                     <h4 className="font-medium text-blue-900">Download CSV Template</h4>
@@ -17,8 +17,10 @@ export const CSVTemplateDownload: React.FC<CSVTemplateDownloadProps> = ({ onDown
                 </div>
             </div>
             <VButton variant="secondary" size="sm" onClick={onDownload}>
-                <Download className="h-4 w-4 mr-2" />
-                Download
+                <div className='flex'>
+                    <Download className="h-4 w-4 mr-2" />
+                    Download
+                </div>
             </VButton>
         </div>
     </div>
