@@ -1,12 +1,23 @@
-import React from 'react';
-import { Plus } from 'lucide-react';
-import { FormData, GradeLevel } from '../types';
+import React, { useState, useRef } from 'react';
+import { Plus, Users } from 'lucide-react';
+import { FormData, GradeLevel, Employee } from '../types';
 import { VButton } from './ui/VButton';
 import { VModal } from './ui/VModal';
-import { VInput } from './ui/VInput';
-import { VCountrySelect } from './ui/VCountrySelect';
-import { VTextarea } from './ui/VTextarea';
-import { VGradeLevelSelect } from './ui/VGradeLevelSelect';
+import { ModeToggle } from './AddEmployeeModal/ModeToggle';
+import { SingleEmployeeForm } from './AddEmployeeModal/SingleEmployeeForm';
+import { BatchUploadForm } from './AddEmployeeModal/BatchUploadForm';
+
+interface ParsedEmployee {
+  name: string;
+  country: string;
+  state: string;
+  address: string;
+  role: string;
+  department: string;
+  gradeLevel: string;
+  isValid: boolean;
+  errors: string[];
+}
 
 interface AddEmployeeModalProps {
   isOpen: boolean;
@@ -16,6 +27,7 @@ interface AddEmployeeModalProps {
   countries: string[];
   gradeLevels: GradeLevel[];
   onSubmit: () => void;
+  onBatchSubmit?: (employees: Omit<Employee, 'id' | 'createdAt'>[]) => void;
 }
 
 const AddEmployeeModal: React.FC<AddEmployeeModalProps> = ({
@@ -25,85 +37,128 @@ const AddEmployeeModal: React.FC<AddEmployeeModalProps> = ({
   onFormChange,
   countries,
   gradeLevels,
-  onSubmit
+  onSubmit,
+  onBatchSubmit
 }) => {
-  const handleInputChange = (field: keyof FormData, value: string) => {
-    onFormChange({ ...formData, [field]: value });
+  const [mode, setMode] = useState<'single' | 'batch'>('single');
+  const [parsedEmployees, setParsedEmployees] = useState<ParsedEmployee[]>([]);
+  const [uploadError, setUploadError] = useState<string>('');
+
+  const handleEmployeesParsed = (employees: ParsedEmployee[]) => {
+    setParsedEmployees(employees);
+    setUploadError('');
+  };
+
+  const handleBatchSubmit = () => {
+    const validEmployees = parsedEmployees.filter(emp => emp.isValid);
+    if (validEmployees.length === 0) {
+      setUploadError('No valid employees to add');
+      return;
+    }
+
+    const employeesToAdd = validEmployees.map(emp => ({
+      name: emp.name,
+      country: emp.country,
+      state: emp.state,
+      address: emp.address,
+      role: emp.role,
+      department: emp.department,
+      gradeLevel: emp.gradeLevel
+    }));
+
+    if (onBatchSubmit) {
+      onBatchSubmit(employeesToAdd);
+      setParsedEmployees([]);
+      setMode('single');
+      onClose();
+    }
+  };
+
+  const handleClose = () => {
+    setParsedEmployees([]);
+    setUploadError('');
+    setMode('single');
+    onClose();
   };
 
   const modalIcon = (
     <div className="bg-gradient-to-br from-blue-500 to-indigo-600">
-      <Plus className="h-5 w-5 text-white" />
+      {mode === 'single' ? (
+        <Plus className="h-5 w-5 text-white" />
+      ) : (
+        <Users className="h-5 w-5 text-white" />
+      )}
     </div>
   );
 
-  const modalActions = (
-    <>
-      <VButton variant="secondary" onClick={onClose}>
-        Cancel
-      </VButton>
-      <VButton variant="primary" onClick={onSubmit}>
-        Add Employee
-      </VButton>
-    </>
-  );
+  const getModalActions = () => {
+    if (mode === 'batch' && parsedEmployees.length > 0) {
+      const validCount = parsedEmployees.filter(emp => emp.isValid).length;
+      return (
+        <>
+          <VButton variant="secondary" onClick={() => setMode('single')}>
+            Back to Single
+          </VButton>
+          <VButton 
+            variant="primary" 
+            onClick={handleBatchSubmit}
+            disabled={validCount === 0}
+          >
+            Add {validCount} Employee{validCount !== 1 ? 's' : ''}
+          </VButton>
+        </>
+      );
+    }
+
+    if (mode === 'batch') {
+      return (
+        <VButton variant="secondary" onClick={() => setMode('single')}>
+          Back to Single
+        </VButton>
+      );
+    }
+
+    return (
+      <>
+        <VButton variant="secondary" onClick={handleClose}>
+          Cancel
+        </VButton>
+        <VButton variant="primary" onClick={onSubmit}>
+          Add Employee
+        </VButton>
+      </>
+    );
+  };
 
   return (
     <VModal
-        isOpen={isOpen}
-        onClose={onClose}
-        title="Add New Employee"
-        subtitle="Welcome a new team member to your organization"
-        icon={modalIcon}
-        iconGradient="from-blue-500 to-indigo-600"
-        actions={modalActions}
+      isOpen={isOpen}
+      onClose={handleClose}
+      title={mode === 'single' ? "Add New Employee" : "Batch Upload Employees"}
+      subtitle={mode === 'single' ? "Welcome a new team member to your organization" : "Upload multiple employees using CSV file"}
+      icon={modalIcon}
+      iconGradient="from-blue-500 to-indigo-600"
+      actions={getModalActions()}
+      size={mode === 'batch' && parsedEmployees.length > 0 ? 'xl' : 'lg'}
     >
-        <VInput
-            placeholder="Full Name *"
-            value={formData.name}
-            onChange={(value) => handleInputChange('name', value)}
-            required
+      <ModeToggle mode={mode} onModeChange={setMode} />
+
+      {mode === 'single' ? (
+        <SingleEmployeeForm
+          formData={formData}
+          onFormChange={onFormChange}
+          countries={countries}
+          gradeLevels={gradeLevels}
         />
-        
-        <VCountrySelect
-            countries={countries}
-            value={formData.country}
-            onChange={(value) => handleInputChange('country', value)}
-            required
+      ) : (
+        <BatchUploadForm
+          countries={countries}
+          gradeLevels={gradeLevels}
+          onEmployeesParsed={handleEmployeesParsed}
+          parsedEmployees={parsedEmployees}
+          uploadError={uploadError}
         />
-        
-        <VInput
-            placeholder="State / Province"
-            value={formData.state}
-            onChange={(value) => handleInputChange('state', value)}
-        />
-        
-        <VTextarea
-            placeholder="Address"
-            value={formData.address}
-            onChange={(value) => handleInputChange('address', value)}
-            rows={3}
-        />
-      
-        <VInput
-            placeholder="Job Role *"
-            value={formData.role}
-            onChange={(value) => handleInputChange('role', value)}
-            required
-        />
-        
-        <VInput
-            placeholder="Department *"
-            value={formData.department}
-            onChange={(value) => handleInputChange('department', value)}
-            required
-        />
-        
-        <VGradeLevelSelect
-            gradeLevels={gradeLevels}
-            value={formData.gradeLevel}
-            onChange={(value) => handleInputChange('gradeLevel', value)}
-        />
+      )}
     </VModal>
   );
 };

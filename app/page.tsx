@@ -94,6 +94,21 @@ export default function Home() {
     setShowAddForm(false);
   };
 
+  const addBatchEmployees = (employeesToAdd: Omit<Employee, 'id' | 'createdAt'>[]): void => {
+    
+    const newEmployees = employeesToAdd.map((emp, index) => ({
+      id: Date.now() + index,
+      ...emp,
+      createdAt: new Date().toISOString()
+    }));
+  
+    const updatedEmployees = [...employees, ...newEmployees];
+    console.log('Updated employees list:', updatedEmployees);
+    
+    setEmployees(updatedEmployees);
+    saveToLocalStorage(updatedEmployees, undefined);
+  };
+
   const editEmployee = (): void => {
     if (!formData.name || !formData.country || !formData.role || !formData.department) {
       alert('Please fill in all required fields');
@@ -259,6 +274,7 @@ export default function Home() {
         countries={countries}
         gradeLevels={gradeLevels}
         onSubmit={addEmployee}
+        onBatchSubmit={addBatchEmployees}
       />
 
       <EditEmployeeModal
